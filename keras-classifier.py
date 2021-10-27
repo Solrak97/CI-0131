@@ -50,3 +50,30 @@ def summarize_diagnostics(history):
 
     #Mostrar plot / Cambiar por archivo eventualmente
     pyplot.show()
+
+
+
+def run_test():
+
+    model = define_model()
+
+    datagen = ImageDataGenerator(featurewise_center=True)
+
+    datagen.mean = [123.68, 116.779, 103.939]
+
+    #Carga de datos, modificar el path!!!!!
+    train_it = datagen.flow_from_directory('', class_mode='binary', batch_size=64, target_size=(224, 224)) #SET PATH FROM COLAB
+    test_it = datagen.flow_from_directory('', class_mode='binary', batch_size=64, target_size=(224, 224)) #SET PATH FROM COLAB
+
+    #FIT
+    history = model.fit_generator(train_it, steps_per_epoch=len(train_it),
+    validation_data=test_it, validation_steps=len(test_it), epochs=10, verbose=1)
+
+
+    #EVAL
+    _, acc = model.evaluate_generator(test_it, steps=len(test_it), verbose=0)
+    print('> %.3f' % (acc * 100.0))
+
+    summarize_diagnostics(history)
+
+run_test()
